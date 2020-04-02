@@ -36,26 +36,22 @@ class DBStorage():
         """
             All in Dict Objects
         """
-        session = self.__session
-        dicsql = {}
-
-        if (not cls):
-            hbn = [User, City, Amenity, Review, Place, State]
-
-        else:
-            if (type(cls) == str):
+        dicty = {}
+        if cls:
+            if type(cls) is str:
                 cls = eval(cls)
-
-            hbn = [cls]
-
-        for x in hbn:
-            sql = session.query(x).all()
-
-            for i in sql:
-                key = "{}.{}".format(type(i).__name__, i.id)
-                dicsql[key] = i
-
-        return (dicsql)
+            query = self.__session.query(cls)
+            for obj in query:
+                key = "{}.{}".format(type(obj).__name__, obj.id)
+                dicty[key] = obj
+        else:
+            objects = [State, City, User, Place, Review]
+            for clas in objects:
+                query = self.__session.query(clas)
+                for obj in query:
+                    key = "{}.{}".format(type(obj).__name__, obj.id)
+                    dicty[key] = obj
+        return dicty
 
     def new(self, obj):
         """
