@@ -40,7 +40,7 @@ class DBStorage():
         dicsql = {}
 
         if (not cls):
-            hbn = [User, City, Amenity, Review, Place, State]
+            hbn = [User, City, State]
 
         else:
             if (type(cls) == str):
@@ -49,7 +49,7 @@ class DBStorage():
             hbn = [cls]
 
         for x in hbn:
-            sql = session.query(x).all()
+            sql = session.query(x)
 
             for i in sql:
                 key = "{}.{}".format(type(i).__name__, i.id)
