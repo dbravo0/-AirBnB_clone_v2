@@ -40,7 +40,7 @@ class DBStorage():
         dicsql = {}
 
         if (not cls):
-            hbn = [User, City, State, Place, Review]
+            hbn = [User, City, State, Place, Review, Amenity]
 
         else:
             if (type(cls) == str):
