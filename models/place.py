@@ -6,6 +6,7 @@ from sqlalchemy.orm import relationship, backref
 from os import environ
 from models.review import Review
 import models
+from models.amenity import Amenity
 
 type_storage = environ.get('HBNB_TYPE_STORAGE')
 
@@ -69,9 +70,18 @@ class Place(BaseModel, Base):
         @property
         def amenities(self):
             """ Getter for amenities. """
-            return self.amenity_ids
+            all_amenities = models.storage.all(Amenity)
+            place_amenities = []
+            for amenity_ins in all_amenities.values():
+                if (amenity_ins.place_id == self.id):
+                    place_amenities.append(amenity_ins)
+
+            return (place_amenities)
 
         @amenities.setter
         def amenities(self, ins):
+            """
+                Amenity Setter
+            """
             if ins and isinstance(ins, models.Amenity):
                 self.amenity_ids.append(ins)
