@@ -8,8 +8,6 @@ from models.review import Review
 import models
 from models.amenity import Amenity
 
-type_storage = environ.get('HBNB_TYPE_STORAGE')
-
 place_amenity = Table('place_amenity', Base.metadata,
                       Column('place_id',
                              String(60),
@@ -51,7 +49,7 @@ class Place(BaseModel, Base):
     longitude = Column(Float)
     amenity_ids = []
 
-    if (type_storage == "db"):
+    if (environ.get('HBNB_TYPE_STORAGE') == "db"):
         reviews = relationship('Review', backref="place",
                                cascade="all, delete, delete-orphan")
         amenities = relationship('Amenity', secondary=place_amenity,
@@ -85,5 +83,5 @@ class Place(BaseModel, Base):
             """
                 Amenity Setter
             """
-            if isinstance(amenity_ins, Amenity):
+            if isinstance(amenity_ins, models.Amenity):
                 self.amenities.append(amenity_ins.id)
