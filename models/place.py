@@ -1,24 +1,25 @@
+
 #!/usr/bin/python3
 """This is the place class"""
-from models.base_model import BaseModel, Base
-from sqlalchemy import Column, Integer, ForeignKey, String, Float, Table, MetaData
-from sqlalchemy.orm import relationship, backref
-from os import environ
-from models.review import Review
 import models
+from models.review import Review
 from models.amenity import Amenity
+from models.base_model import BaseModel, Base
+from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
+from sqlalchemy import MetaData
+from sqlalchemy.orm import relationship
+from models.city import City
+from os import environ
 
-place_amenity = Table('place_amenity', Base.metadata,
-                      Column('place_id',
+place_amenity = Table("place_amenity", Base.metadata,
+                      Column("place_id",
                              String(60),
-                             ForeignKey('places.id'),
-                             primary_key=True,
-                             nullable=False),
-                      Column('amenity_id',
+                             ForeignKey("places.id"),
+                             primary_key=True),
+                      Column("amenity_id",
                              String(60),
-                             ForeignKey('amenities.id'),
-                             primary_key=True,
-                             nullable=False))
+                             ForeignKey("amenities.id"),
+                             primary_key=True))
 
 
 class Place(BaseModel, Base):
@@ -49,7 +50,7 @@ class Place(BaseModel, Base):
     longitude = Column(Float)
     amenity_ids = []
 
-    if (environ.get('HBNB_TYPE_STORAGE') == "db"):
+    if environ.get('HBNB_TYPE_STORAGE') == "db":
         reviews = relationship('Review', backref="place",
                                cascade="all, delete, delete-orphan")
         amenities = relationship('Amenity', secondary="place_amenity",
@@ -57,31 +58,27 @@ class Place(BaseModel, Base):
     else:
         @property
         def reviews(self):
-            """
-                Return Instances Reviews
-            """
-            all_review = models.storage.all(Review)
-            review_place = []
-            for review_ins in all_review.values():
-                if (review_ins.place_id == self.id):
-                    review_place.append(review_ins)
-            return (review_place)
+            """ Return the list of the city """
+            all_reviews = models.storage.all(Review)
+            filter_reviews = []
+            for review in all_reviews.values():
+                if review.place_id == self.id:
+                    filter_reviews.append(review)
+            return filter_reviews
 
         @property
         def amenities(self):
-            """ Amenity Getter """
+            """ Return list of amenities """
             all_amenities = models.storage.all(Amenity)
-            place_amenities = []
-            for amenity_ins in all_amenities.values():
-                if (amenity_ins.place_id == self.id):
-                    place_amenities.append(amenity_ins)
-
-            return (place_amenities)
+            filter_amenities = []
+            for amenity in all_amenities.values():
+                for place_amenity in self.amenity_ids:
+                    if amenity.id == place_amenity:
+                        filter_amenities.append(amenity)
+            return filter_amenities
 
         @amenities.setter
-        def amenities(self, amenity_ins):
-            """
-                Amenity Setter
-            """
-            if isinstance(amenity_ins, models.Amenity):
-                self.amenities.append(amenity_ins.id)
+        def amenities(self, amenity_obj):
+            """ Add Amenity.id to amenity_ids """
+            if isinstance(amenity_obj, Amenity):
+                self.amenity_ids.append(amenity_obj.id)
