@@ -4,7 +4,7 @@ from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, Float, Integer, ForeignKey, Table
 from sqlalchemy.orm import relationship, backref
 from os import getenv
-
+import models
 
 place_amenity = Table("place_amenity", Base.metadata,
                       Column("place_id", String(60),
@@ -32,6 +32,7 @@ class Place(BaseModel):
         longitude: longitude in float
         amenity_ids: list of Amenity ids
     """
+    __tablename__ = "places"
     city_id = Column(String (60), nullable=False, ForeignKey("cities.idInteger"))
     user_id = Column(String(60), nullable=False, ForeignKey("users.id"))
     name = Column(String(128), nullable=False)
