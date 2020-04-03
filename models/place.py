@@ -1,20 +1,21 @@
 #!/usr/bin/python3
 """This is the place class"""
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, Integer, ForeignKey, String, Float, Table
+from sqlalchemy import Column, Integer, ForeignKey, String, Float, Table, MetaData
 from sqlalchemy.orm import relationship, backref
 from os import environ
 from models.review import Review
 import models
+from models.amenity import Amenity
 
 type_storage = environ.get('HBNB_TYPE_STORAGE')
 
-place_amenity = Table("place_amenity", Base.metadata,
-                      Column("place_id", String(60),
+place_amenity = Table('place_amenity', Base.metadata,
+                      Column('place_id', String(60),
                              ForeignKey("places.id"),
                              primary_key=True,
                              nullable=False),
-                      Column("amenity_id", String(60),
+                      Column('amenity_id', String(60),
                              ForeignKey("amenities.id"),
                              primary_key=True,
                              nullable=False))
@@ -69,7 +70,7 @@ class Place(BaseModel, Base):
         @property
         def amenities(self):
             """ Amenity Getter """
-            all_amenities = models.storage.all(models.Amenity)
+            all_amenities = models.storage.all(Amenity)
             place_amenities = []
             for amenity_ins in all_amenities.values():
                 if (amenity_ins.place_id == self.id):
@@ -82,5 +83,5 @@ class Place(BaseModel, Base):
             """
                 Amenity Setter
             """
-            if isinstance(amenity_ins, models.Amenity):
+            if isinstance(amenity_ins, Amenity):
                 self.amenities.append(amenity_ins.id)
