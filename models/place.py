@@ -17,7 +17,7 @@ place_amenity = Table("place_amenity", Base.metadata,
                              nullable=False))
 
 
-class Place(BaseModel):
+class Place(BaseModel, Base):
     """This is the class for Place
     Attributes:
         city_id: city id
@@ -33,7 +33,7 @@ class Place(BaseModel):
         amenity_ids: list of Amenity ids
     """
     __tablename__ = "places"
-    city_id = Column(String (60), nullable=False, ForeignKey("cities.idInteger"))
+    city_id = Column(String (60), nullable=False, ForeignKey("cities.id"))
     user_id = Column(String(60), nullable=False, ForeignKey("users.id"))
     name = Column(String(128), nullable=False)
     description = Column(String(1024), nullable=True)
