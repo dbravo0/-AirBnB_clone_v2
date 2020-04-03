@@ -68,7 +68,7 @@ class Place(BaseModel, Base):
 
         @property
         def amenities(self):
-            """ Getter for amenities. """
+            """ Amenity Getter """
             all_amenities = models.storage.all(models.Amenity)
             place_amenities = []
             for amenity_ins in all_amenities.values():
@@ -78,9 +78,9 @@ class Place(BaseModel, Base):
             return (place_amenities)
 
         @amenities.setter
-        def amenities(self, ins):
+        def amenities(self, amenity_ins):
             """
                 Amenity Setter
             """
-            if ins and isinstance(ins, models.Amenity):
-                self.amenity_ids.append(ins)
+            if isinstance(amenity_ins, models.Amenity):
+                self.amenities.append(amenity_ins.id)
