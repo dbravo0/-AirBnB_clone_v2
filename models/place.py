@@ -5,7 +5,6 @@ from sqlalchemy import Column, Integer, ForeignKey, String, Float, Table
 from sqlalchemy.orm import relationship, backref
 from os import environ
 from models.review import Review
-from models.amenity import Amenity
 import models
 
 type_storage = environ.get('HBNB_TYPE_STORAGE')
@@ -74,5 +73,5 @@ class Place(BaseModel, Base):
 
         @amenities.setter
         def amenities(self, ins):
-            if ins and isinstance(ins, Amenity):
+            if ins and isinstance(ins, models.Amenity):
                 self.amenity_ids.append(ins)
