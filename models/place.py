@@ -52,6 +52,8 @@ class Place(BaseModel, Base):
     if (type_storage == "db"):
         reviews = relationship('Review', backref="place",
                                cascade="all, delete, delete-orphan")
+        amenities = relationship("Amenity", secondary=place_amenity,
+                                 backref="place_amenities", viewonly=False)
     else:
         @property
         def reviews(self):
@@ -65,10 +67,6 @@ class Place(BaseModel, Base):
                     review_place.append(review_ins)
             return (review_place)
 
-    if (type_storage == "db"):
-        amenities = relationship("Amenity", secondary=place_amenity,
-                                 backref="place_amenities", viewonly=False)
-    else:
         @property
         def amenities(self):
             """ Getter for amenities. """
