@@ -1,3 +1,4 @@
+#Puppet Setup Web Static.
 exec { 'update_packages':
   command  => 'sudo apt-get update -y',
   provider => shell
