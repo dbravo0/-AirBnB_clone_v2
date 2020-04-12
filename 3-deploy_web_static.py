@@ -44,3 +44,13 @@ def do_deploy(archive_path):
         return True
     except Exception:
         return False
+
+
+def deploy():
+    """
+        Deploy New Files
+    """
+    new_file = do_pack()
+    if (not new_file):
+        return False
+    return do_deploy(new_file)
