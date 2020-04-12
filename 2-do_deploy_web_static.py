@@ -18,19 +18,22 @@ def do_pack():
 
 
 def do_deploy(archive_path):
-    if (not path.exists(archive_path)):
+    """ Distributes an archive to the web servers """
+    if not path.exists(archive_path):
         return False
+    # split the path and get the second element in the list
     file_path = archive_path.split("/")[1]
-    server_path = "/data/web_static/releases/" + file_path
+    serv_folder = "/data/web_static/releases/" + file_path
+
     try:
         put(archive_path, "/tmp/")
-        run("sudo mkdir -p " + server_path)
-        run("sudo tar -xzf /tmp/" + file_path + " -C " + server_path + "/")
+        run("sudo mkdir -p " + serv_folder)
+        run("sudo tar -xzf /tmp/" + file_path + " -C " + serv_folder + "/")
         run("sudo rm /tmp/" + file_path)
-        run("sudo mv " + server_path + "/web_static/* " + server_path)
-        run("sudo rm -rf " + server_path + "/web_static")
+        run("sudo mv " + serv_folder + "/web_static/* " + serv_folder)
+        run("sudo rm -rf " + serv_folder + "/web_static")
         run("sudo rm -rf /data/web_static/current")
-        run("sudo ln -s " + server_path + " /data/web_static/current")
+        run("sudo ln -s " + serv_folder + " /data/web_static/current")
         print("New version deployed!")
         return True
     except Exception:
