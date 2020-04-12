@@ -1,52 +1,50 @@
-# Puppet for setup, Redo the task #0
-exec { 'Update Packages':
+#Puppet Setup Web Static.
+exec { 'update_packages':
   command  => 'sudo apt-get update -y',
   provider => shell
 }
-exec { 'Install Nginx':
+exec { 'install_nginx':
+  require  => Exec['update_packages'],
   command  => 'sudo apt-get install nginx -y',
-  provider => shell,
-  require  => Exec['Update Packages']
+  provider => shell
 }
-exec { 'Create Shared Folder':
+exec { 'create_directory_1':
+  require  => Exec['install_nginx'],
   command  => 'sudo mkdir -p /data/web_static/shared/',
-  provider => shell,
-  require  => Exec['Install Nginx']
+  provider => shell
 }
-exec { 'Create Test Folder':
+exec { 'create_directory_2':
+  require  => Exec['create_directory_1'],
   command  => 'sudo mkdir -p /data/web_static/releases/test/',
-  provider => shell,
-  require  => Exec['Create Shared Folder']
+  provider => shell
 }
-exec { 'Create Fake File':
+exec { 'crate_file_html':
+  require  => Exec['create_directory_2'],
   command  => 'echo "Holberton School" > /data/web_static/releases/test/index.html',
-  provider => shell,
-  require  => Exec['Create Test Folder'],
-  returns  => [0, 1]
+  provider => shell
 }
-exec { 'Symbolic Link':
+exec { 'symbolik':
+  require  => Exec['crate_file_html'],
   command  => 'sudo ln -sf /data/web_static/releases/test/ /data/web_static/current',
-  provider => shell,
-  require  => Exec['Create Fake File']
+  provider => shell
 }
-exec { 'Give Ownership':
+exec { 'chown_permissons':
+  require  => Exec['symbolik'],
   command  => 'sudo chown -R ubuntu:ubuntu /data/',
-  provider => shell,
-  require  => Exec['Symbolic Link']
+  provider => shell
 }
-exec { 'Add Location':
+exec { 'post_location':
+  require  => Exec['chown_permissons'],
   command  => 'sudo sed -i "38i\\\n\tlocation \/hbnb_static\/ {\n\t\talias \/data\/web_static\/current\/;\n\t}\n" /etc/nginx/sites-enabled/default',
-  provider => shell,
-  require  => Exec['Give Ownership']
+  provider => shell
 }
-exec { 'Reload Nginx':
+exec { 'reload_nginx':
+  require  => Exec['post_location'],
   command  => 'sudo service nginx reload',
-  provider => shell,
-  require  => Exec['Add Location']
-
+  provider => shell
 }
-exec { 'Restart Nginx':
+exec { 'restart_nginx':
+  require  => Exec['reload_nginx'],
   command  => 'sudo service nginx restart',
-  provider => shell,
-  require  => Exec['Reload Nginx']
+  provider => shell
 }
