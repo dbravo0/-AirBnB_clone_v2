@@ -88,7 +88,5 @@ class DBStorage():
         self.__session = sess_2()
 
     def close(self):
-        """
-            Close the Session
-        """
-        self.__session.close()
+        """Thread specific storage"""
+        self.reload()
