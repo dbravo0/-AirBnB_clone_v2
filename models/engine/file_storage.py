@@ -21,17 +21,15 @@ class FileStorage:
     __objects = {}
 
     def all(self, cls=None):
-        """returns a dictionary
-        Return:
-            returns a dictionary of __object
-        """
-        if (cls is not None):
+        """Returns a dictionary of __object"""
+        if cls is None:
+            return self.__objects
+        else:
             cls_object = {}
-            for key, value in self.__objects.items():
+            for key, value in self.__objects:
                 if (type(value) is cls):
                     cls_object[key] = value
             return cls_object
-        return self.__objects
 
     def new(self, obj):
         """sets __object to given obj
