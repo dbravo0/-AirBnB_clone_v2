@@ -1,0 +1,12 @@
+footer .footerone{
+    background-color: #ffffff;
+    height: 60px;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #CCCCCC;
+    
+}
