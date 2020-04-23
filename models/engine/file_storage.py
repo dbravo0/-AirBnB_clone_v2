@@ -26,9 +26,10 @@ class FileStorage:
             return self.__objects
         else:
             cls_object = {}
-            for key, value in self.__objects:
-                if (type(value) is cls):
-                    cls_object[key] = value
+            for key in self.__objects:
+                value = key.split(".")
+                if value[0] == cls.__name__:
+                    cls_object[key] = self.__objects[key]
             return cls_object
 
     def new(self, obj):
