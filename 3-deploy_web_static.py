@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 # Creates and distributes an archive to web servers
 
-from datetime import datetime
 from fabric.api import *
-from os import path
-
+import os
+from datetime import datetime
+import tarfile
 
 env.host = ["34.75.15.77", "35.185.77.201"]
 env.user = "ubuntu"
