@@ -1,37 +1,33 @@
 #!/usr/bin/python3
-from datetime import datetime
+# Distributes an archive to web servers
+
 from fabric.api import *
-from os import path
+import os
+import ntpath
+
 
 env.host = ["34.75.15.77", "35.185.77.201"]
+env.user = "ubuntu"
 
 
 def do_pack():
-    date_today = datetime.now().strftime('%Y%m%d%H%M%S')
-    local("mkdir -p versions/")
-    try:
-        local("tar -cvzf versions/web_static_{}.tgz web_static"
-              .format(date_today))
-        return "versions/web_static_{}.tgz".format(date_today)
-    except Exception:
-        return None
 
-
-def do_deploy(archive_path):
-    if (not path.exists(archive_path)):
+    if not os.path.exists(archive_path):
         return False
-    file_path = archive_path.split("/")[1]
-    server_path = "/data/web_static/releases/" + file_path
+
     try:
         put(archive_path, "/tmp/")
-        run("sudo mkdir -p " + server_path)
-        run("sudo tar -xzf /tmp/" + file_path + " -C " + server_path + "/")
-        run("sudo rm /tmp/" + file_path)
-        run("sudo mv " + server_path + "/web_static/* " + server_path)
-        run("sudo rm -rf " + server_path + "/web_static")
-        run("sudo rm -rf /data/web_static/current")
-        run("sudo ln -s " + server_path + " /data/web_static/current")
-        print("New version deployed!")
+
+        file = ntpath.basename(archive_path)
+        folder = file[:-4]
+        run("mkdir -p /data/web_static/releases/" + folder)
+        run("tar -xzf /tmp/" + file + " -C /data/web_static/releases/" +
+            folder)
+        run("rm /tmp/" + file)
+        run("rm /data/web_static/current")
+        run("ln -sf /data/web_static/releases/" + folder +
+            "/web_static/ /data/web_static/current")
+
         return True
     except Exception:
         return False
