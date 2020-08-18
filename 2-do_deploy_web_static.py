@@ -3,7 +3,7 @@ from datetime import datetime
 from fabric.api import *
 from os import path
 
-env.host = ["35.243.184.34", "107.21.164.251"]
+env.host = ["34.75.15.77", "35.185.77.201"]
 
 
 def do_pack():
