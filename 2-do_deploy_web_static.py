@@ -10,7 +10,7 @@ env.host = ["34.75.15.77", "35.185.77.201"]
 env.user = "ubuntu"
 
 
-def do_pack():
+def do_pack(archive_path):
 
     if not os.path.exists(archive_path):
         return False
