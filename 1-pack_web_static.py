@@ -7,6 +7,7 @@ import os
 
 
 def do_pack():
+    """ Funtion do_pack """
     pathdir = "versions/"
     namefile = "web_static_" + datetime.now().strftime("%Y%m%d%H%M%S") + ".tgz"
     if not os.path.exists(pathdir):
