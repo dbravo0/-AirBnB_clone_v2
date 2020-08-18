@@ -1,11 +1,8 @@
 #!/usr/bin/python3
 # Distributes an archive to web servers
 
-from fabric.api import env
-from fabric.api import put
-from fabric.api import run
+from fabric.api import *
 import os
-import ntpath
 
 
 env.hosts = ["34.75.15.77", "35.185.77.201"]
@@ -13,22 +10,26 @@ env.user = "ubuntu"
 
 
 def do_deploy(archive_path):
-    """ Funtion do_deploy """
+    """ Deploys archive to servers"""
     if not os.path.exists(archive_path):
         return False
 
-    try:
-        put(archive_path, "/tmp/")
+    results = []
 
-        file = ntpath.basename(archive_path)
-        folder = file[:-4]
-        run("mkdir -p /data/web_static/releases/" + folder)
-        run("tar -xzf /tmp/" + file + " -C /data/web_static/releases/" +
-            folder)
-        run("rm /tmp/" + file)
-        run("rm /data/web_static/current")
-        run("ln -sf /data/web_static/releases/" + folder +
-            "/web_static/ /data/web_static/current")
-        return True
-    except Exception:
-        return False
+    res = put(archive_path, "/tmp")
+    results.append(res.succeeded)
+
+    basename = os.path.basename(archive_path)
+    if basename[-4:] == ".tgz":
+        name = basename[:-4]
+    newdir = "/data/web_static/releases/" + name
+    run("mkdir -p " + newdir)
+    run("tar -xzf /tmp/" + basename + " -C " + newdir)
+
+    run("rm /tmp/" + basename)
+    run("mv " + newdir + "/web_static/* " + newdir)
+    run("rm -rf " + newdir + "/web_static")
+    run("rm -rf /data/web_static/current")
+    run("ln -s " + newdir + " /data/web_static/current")
+
+    return True
