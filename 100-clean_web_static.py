@@ -1,12 +1,13 @@
 #!/usr/bin/python3
-"""
-    Import Modules
-"""
+# Import Modules
+
 from datetime import datetime
 from fabric.api import *
 from os import path
 
-env.host = ['35.227.85.236', '3.80.76.254']
+
+env.hosts = ["34.75.15.77", "35.185.77.201"]
+env.user = "ubuntu"
 
 
 def do_pack():
