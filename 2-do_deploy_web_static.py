@@ -1,16 +1,18 @@
 #!/usr/bin/python3
 # Distributes an archive to web servers
 
-from fabric.api import *
+from fabric.api import env
+from fabric.api import put
+from fabric.api import run
 import os
 import ntpath
 
 
-env.host = ["34.75.15.77", "35.185.77.201"]
+env.hosts = ["34.75.15.77", "35.185.77.201"]
 env.user = "ubuntu"
 
 
-def do_pack(archive_path):
+def do_deploy(archive_path):
 
     if not os.path.exists(archive_path):
         return False
@@ -27,7 +29,6 @@ def do_pack(archive_path):
         run("rm /data/web_static/current")
         run("ln -sf /data/web_static/releases/" + folder +
             "/web_static/ /data/web_static/current")
-
         return True
     except Exception:
         return False
