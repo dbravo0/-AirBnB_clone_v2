@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# Import Modules
+# Creates and distributes an archive to web servers
 
 from datetime import datetime
 from fabric.api import *
@@ -10,48 +10,49 @@ env.host = ["34.75.15.77", "35.185.77.201"]
 env.user = "ubuntu"
 
 
+def deploy():
+    """ Funtion deploy"""
+    tar = do_pack()
+    if not tar:
+        return False
+    return do_deploy(tar)
+
+
 def do_pack():
-    """
-        Pack in tgz Extension
-    """
-    date_today = datetime.now().strftime('%Y%m%d%H%M%S')
-    local("mkdir -p versions/")
-    try:
-        local("tar -cvzf versions/web_static_{}.tgz web_static"
-              .format(date_today))
-        return "versions/web_static_{}.tgz".format(date_today)
-    except Exception:
+    """ Funtion do_pack """
+    savedir = "versions/"
+    filename = "web_static_" + datetime.now().strftime("%Y%m%d%H%M%S") + ".tgz"
+    if not os.path.exists(savedir):
+        os.mkdir(savedir)
+    with tarfile.open(savedir + filename, "w:gz") as tar:
+        tar.add("web_static", arcname=os.path.basename("web_static"))
+    if os.path.exists(savedir + filename):
+        return savedir + filename
+    else:
         return None
 
 
 def do_deploy(archive_path):
-    """
-        Function Deploy
-    """
-    if (not path.exists(archive_path)):
-        return False
-    file_path = archive_path.split("/")[1]
-    server_path = "/data/web_static/releases/" + file_path
-    try:
-        put(archive_path, "/tmp/")
-        run("sudo mkdir -p " + server_path)
-        run("sudo tar -xzf /tmp/" + file_path + " -C " + server_path + "/")
-        run("sudo rm /tmp/" + file_path)
-        run("sudo mv " + server_path + "/web_static/* " + server_path)
-        run("sudo rm -rf " + server_path + "/web_static")
-        run("sudo rm -rf /data/web_static/current")
-        run("sudo ln -s " + server_path + " /data/web_static/current")
-        print("New version deployed!")
-        return True
-    except Exception:
+    """ Funtion do_deploy """
+    if not os.path.exists(archive_path):
         return False
 
+    results = []
 
-def deploy():
-    """
-        Deploy New Files
-    """
-    new_file = do_pack()
-    if (not new_file):
-        return False
-    return do_deploy(new_file)
+    res = put(archive_path, "/tmp")
+    results.append(res.succeeded)
+
+    basename = os.path.basename(archive_path)
+    if basename[-4:] == ".tgz":
+        name = basename[:-4]
+    newdir = "/data/web_static/releases/" + name
+    run("mkdir -p " + newdir)
+    run("tar -xzf /tmp/" + basename + " -C " + newdir)
+
+    run("rm /tmp/" + basename)
+    run("mv " + newdir + "/web_static/* " + newdir)
+    run("rm -rf " + newdir + "/web_static")
+    run("rm -rf /data/web_static/current")
+    run("ln -s " + newdir + " /data/web_static/current")
+
+    return True
