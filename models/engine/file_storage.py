@@ -65,10 +65,11 @@ class FileStorage:
         """
             Delete Objects
         """
-        if (obj):
-            key = ("{}.{}".format(type(obj).__name__, obj.id))
-            if (key in self.__objects):
-                del self.__objects[key]
+        if not obj:
+            return
+        key = "{}.{}".format(type(obj).__name__, obj.id)
+        if key in self.__objects:
+            del self.__objects[key]
             self.save()
 
     def close(self):
