@@ -8,30 +8,25 @@ from os import getenv
 import models
 
 
-env_storage = environ.get('HBNB_TYPE_STORAGE')
-
-
 class State(BaseModel, Base):
     """This is the class for State
     Attributes:
         name: input name
     """
-    __tablename__ = 'states'
+    __tablename__ = "states"
     name = Column(String(128), nullable=False)
-    if (env_storage == 'db'):
-        cities = relationship('City', backref="state",
-                              cascade="all, delete, delete-orphan")
-    else:
+    cities = relationship(
+        "City",
+        cascade="all,delete,delete-orphan",
+        backref=backref("state", cascade="all,delete"),
+        passive_deletes=True,
+        single_parent=True)
+
+    if getenv("HBNB_TYPE_STORAGE") != "db":
         @property
         def cities(self):
-            """
-                Return Instances City
-            """
-            all_city = models.storage.all(City)
-            state_city = []
-
-            for city in all_city.values():
-                if (city.state_id == self.id):
-                    state_city.append(city)
-
-            return (state_city)
+            """returns list of City instances with state_id"""
+            from models import storage
+            from models import City
+            return [v for k, v in storage.all(City).items()
+                    if v.state_id == self.id]
