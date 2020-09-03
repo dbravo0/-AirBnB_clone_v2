@@ -4,8 +4,9 @@ from models.base_model import BaseModel, Base
 from sqlalchemy import String, Column
 from sqlalchemy.orm import relationship, backref
 from models.city import City
+from os import getenv
 import models
-import os
+
 
 env_storage = environ.get('HBNB_TYPE_STORAGE')
 
